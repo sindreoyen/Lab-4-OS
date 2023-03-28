@@ -50,3 +50,14 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+mkfs/mkfs
+user/_*
+kernel/kernel
+*.pyc
+*.asm
+*.sym
+*.S
+*.
+user/initcode
+*.img
+*.ans
