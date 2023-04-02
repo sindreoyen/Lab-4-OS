@@ -72,6 +72,10 @@ int memcmp(const void *, const void *, uint);
 void *memcpy(void *, const void *, uint);
 
 // uthread.c
+#define MAX_THREADS 16
+#define NULL ((void*)0) // extracted from library stddef.h
+#define LIB_PREFIX "[UTHREAD]: "
+#define ulog() printf("%s%s\n", LIB_PREFIX, __FUNCTION__)
 
 /// @brief This is the thread context, storing the return address, the stack
 ///        pointer and all callee saved registers
@@ -108,6 +112,9 @@ struct thread
     void *(*func)(void *);
 
     // Feel free to add more fields as needed
+    struct lock *lock;
+    struct thread_attr *attr;
+    void *result;
 };
 
 /// @brief These are the attributes that can be set when creating a thread.
@@ -126,6 +133,10 @@ struct thread_attr
 /// @param old denotes the previous thread context, that will be switched out
 /// @param new denotes the thread context of the thread that will be run next
 extern void tswtch(struct context *old, struct context *new);
+
+extern struct thread *threads[MAX_THREADS];
+extern struct thread *current_thread;
+extern uint8 all_finished;
 
 ////////////////////////////////////////////////////////////////
 /// NOTE: DON'T CHANGE THE FUNCTION OUTLINES BELOW THIS LINE ///
