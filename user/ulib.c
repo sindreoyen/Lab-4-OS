@@ -2,7 +2,14 @@
 #include "kernel/stat.h"
 #include "kernel/fcntl.h"
 #include "user.h"
+#include "kernel/riscv.h"
 
+
+struct arg
+{
+    int a;
+    int b;
+};
 //
 // wrapper so that it's OK if main() does not call exit() and setup main thread.
 //
@@ -12,7 +19,24 @@ void _main(int argc, char *argv[])
     // TODO: This function should only return once all threads have finished running
     extern int main(int argc, char *argv[]);
     int res = main(argc, argv);
-    exit(res);
+    struct arg args;
+    args.a = argc;
+    args.b = **argv;
+
+    printf("Running main with args: %d, %s\n", argc, argv);
+
+    struct thread *main_thread;
+    if (argc == 1)
+        tcreate(&main_thread, 0, (void *)*main, 0);
+    else
+        tcreate(&main_thread, 0, (void *)*main, &args);
+
+    if (all_finished == 1)
+        exit(res);
+    else
+        tyield();
+    
+    printf("Exiting\n");
 }
 
 char *
